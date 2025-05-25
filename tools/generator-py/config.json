@@ -1,0 +1,39 @@
+{
+    "paths": {
+        "base": "../../demo/2021-02",
+        "input": {
+            "coastline": "input/coast",
+            "dem": "input/dem",
+            "crop": "input/crop",
+            "transects": "input/transects"
+        },
+        "output": {
+            "profiles_whole": "output/generator/profiles/whole",
+            "profiles_cropped": "output/generator/profiles/cropped",
+            "dem_cropped": "output/generator/dem/cropped",
+            "dem_slope": "output/generator/dem/slope",
+            "results": "output/finder",
+            "finall": "output/analyser"
+        },
+        "db": "db/database.gpkg"
+    },
+    "db_layers": {
+        "coastline": "line_source",
+        "points": "points",
+        "transects": "transects",
+        "buffers": "bufer",
+        "profiles": "profiles"
+    },
+    "crs": "epsg:2180",
+    "csv": {
+        "sep": ",",
+        "encoding": "utf-8-sig"
+    },
+    "parameters": {
+        "use_precalculated_transects": false,
+        "buffwer_width": 10,
+        "transect_distance": 50,
+        "transect_length": 300,
+        "profile_resolution": 1
+    }
+}

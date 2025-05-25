@@ -1,0 +1,9 @@
+{
+    "input_folder": "../../demo",
+    "selected_folders": [
+        "2022-02-28",
+        "2022-09-06",
+        "2023-02-28"
+    ],
+    "selected_line": "firstZeroPointsLine.geojson"
+}
