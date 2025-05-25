@@ -182,7 +182,9 @@ The default configuration of the program can be changed by editing the ```finder
 | `beyond_top_buffer`   | integer  | `10`    | Number of points to analyze beyond the detected dune crest.  |
 
 
-
+<p align="center">
+  <img src="https://c5studio.pl/cmorph/finder.png" alt="finder" width="auto">
+</p>
 
 
 ### GUI Features and Visualization
