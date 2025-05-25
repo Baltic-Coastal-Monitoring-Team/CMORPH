@@ -663,7 +663,7 @@ The script takes the generated CSV file from analyzer-py for comparison, the use
 
 ---
 
-## Requirements and initialisation
+## ```Requirements and initialisation```
 
 Most of the tests (for both tools and auxiliary scripts) were performed on Linux Ubuntu 22.04.1 LTS using WSL2 running on Windows 11 Pro. The operation of the tools themselves was also tested on macOS Big Sur 11.7.1 and Windows 11 Pro. The Python interpreter version 3.10 was used each time, and the versions of the individual packages can be found in the requirements file.
 
@@ -691,40 +691,23 @@ then edit the requirements.txt file, modifying the GDAL version stored there to 
 pip install -r requirements.txt
 ```
 
-
-## Examples 
-Once the environment has been initialised, we can start testing the tools. Five sets of test data (same area, different periods) have been prepared to download on ZENODO repository (https://zenodo.org/records/15476933). 
-All test data should be placed in the ```demo``` directory, respectively in subdirectories ```2021-02```, ```2022-02``` etc. 
-Each directory contains the input data for calculations. On GitHub repository are corresponding configuration files in each folders. 
 To run app with GUI use code below:
 
 ```
 streamlit run app.py
 ```
 
+## ```Demo data```
+Once the environment has been initialised, we can start testing the tools. Five sets of test data (same area, different periods) have been prepared to download on ZENODO repository (https://zenodo.org/records/15476933). 
+All test data should be placed in the ```demo``` directory, respectively in subdirectories ```2021-02```, ```2022-02``` etc. 
+Each directory contains the input data for calculations. On GitHub repository are corresponding configuration files in each folders. 
+
+
 The calculation can take, depending on the computer used, quite a long time. We are kept informed of the stage of the calculations that are currently being performed. The sample data contain the input DEM, masks and coastline for each raster specifically. After running the script, the output of each sample file will be saved in the respective sample directory in the output folder which will be automatically generated.
-
-We can modify configuration files to change the behaviour of the tools. For example, a change in the generator-py/config.json file:
-
-```
-"parameters": {
-    "transect_distance": 300,
-```
-
-to:
-
-```
-"parameters": {
-    "transect_distance": 200,
-```
-
-it will result in transects being generated every 200 metres rather than 300 metres.
 
 Once all the data have been correctly recalculated, we can use the GUI for visualisation or Jupyter Notebook tools in for further analysis. The paths in these programs are set by default to the data in the demo directory, but the scripts support both absolute and relative paths. .
 
-## Notes
-
-Most common problems are:
+## ```Most common problems```
 - no Rtree tool installed on the system,
 - no GDAL tool installed on the system,
 - versions conflict between the system GDAL tool and the GDAL package for Python,
