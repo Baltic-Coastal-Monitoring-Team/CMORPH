@@ -202,7 +202,9 @@ The GUI interface of the Finder module offers dynamic visualization and quick in
 - Supports sorting and scrolling for better overview of longer datasets.
 - Allows direct download of the full CSV file.
 
-
+<p align="center">
+  <img src="https://c5studio.pl/cmorph/finder-csv.png" alt="finder-csv" width="auto">
+</p>
 
 #### **Quick Charts for Single Profiles**
 
@@ -306,6 +308,9 @@ This tab displays the content of the `analyzer.csv` file, which contains detaile
 - Provides essential morphometric data ready for statistical analysis or machine learning.
 
 
+<p align="center">
+  <img src="https://c5studio.pl/cmorph/analyzer-results.png" alt="analyzer-results" width="auto">
+</p>
 
 
 ---
