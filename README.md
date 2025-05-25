@@ -154,24 +154,24 @@ The default configuration of the program can be changed by editing the ```finder
 #### Finder Parameters
 
 ##### `Min Profile Points` (integer)
-**Description:**: Minimum number of points required in a profile for it to be included in the analysis.
-**Purpose:**: Avoids analyzing extremely short or corrupted profiles that may lead to unreliable feature detection.
-**Default value:**: `10`  
-**Example:**: Profiles with fewer than 10 points will be skipped entirely.
+- **Description:**: Minimum number of points required in a profile for it to be included in the analysis.
+- **Purpose:**: Avoids analyzing extremely short or corrupted profiles that may lead to unreliable feature detection.
+- **Default value:**: `10`  
+- **Example:**: Profiles with fewer than 10 points will be skipped entirely.
 ---
 ### `Elevation Zero` (float)
-**Description:**: Reference elevation (in meters) used to define where the profile intersects with a defined "zero level", typically corresponding to the beach/shore transition.
-**Purpose:**: Used to detect: 
-- `first_zero` – the first point rising above this elevation,
-- `last_zero` – the last point below this elevation.
-**Default value:**: `0.50` (meters above sea level). This value should depend on the height of DEM, sea level and beach level.    
-**Example:**: If set to `0.50`, the finder will look for profile points where the elevation crosses that level, often delineating the width of the dry beach.  If the coastline is at level ‘0.0’, the best solution is to set this value to ‘0.1’. 
+- **Description:**: Reference elevation (in meters) used to define where the profile intersects with a defined "zero level", typically corresponding to the beach/shore transition.
+- **Purpose:**: Used to detect: 
+    - `first_zero` – the first point rising above this elevation,
+    - `last_zero` – the last point below this elevation.
+- **Default value:**: `0.50` (meters above sea level). This value should depend on the height of DEM, sea level and beach level.    
+- **Example:**: If set to `0.50`, the finder will look for profile points where the elevation crosses that level, often delineating the width of the dry beach.  If the coastline is at level ‘0.0’, the best solution is to set this value to ‘0.1’. 
 ---
 ### `Beyond Top Buffer` (integer)
-**Description:**: Number of additional points to analyze **beyond the detected dune crest (`top`)**.
-**Purpose:**: Ensures that the algorithm checks if the detected top is indeed the true crest, or if higher elevations exist slightly farther inland. It refers to the distance between the maximum height point (top point of the cliff) to the last point determined by the algorithm. It informs how far beyond the highest point of the profile the profile itself ends (as long as we do not go beyond its maximum range).
-**Default value:**: `10`  
-**Example:**: If the dune crest is found at index `42`, the analysis will continue through index `52` (i.e., 10 more points).
+- **Description:**: Number of additional points to analyze **beyond the detected dune crest (`top`)**.
+- **Purpose:**: Ensures that the algorithm checks if the detected top is indeed the true crest, or if higher elevations exist slightly farther inland. It refers to the distance between the maximum height point (top point of the cliff) to the last point determined by the algorithm. It informs how far beyond the highest point of the profile the profile itself ends (as long as we do not go beyond its maximum range).
+- **Default value:**: `10`  
+- **Example:**: If the dune crest is found at index `42`, the analysis will continue through index `52` (i.e., 10 more points).
 ---
 ### Summary Table
 
@@ -256,27 +256,27 @@ The default configuration of the program can be changed by editing the ```analys
 #### Additional Parameters
 
 ##### `Selected Profiles`
-**Description**: Allows specifying a subset of profile IDs for which analysis will be run.
-**Input**: Comma-separated list of integers (e.g., `1,3,5,8`).
-**Effect**: All other profiles are ignored during processing.
+- **Description**: Allows specifying a subset of profile IDs for which analysis will be run.
+- **Input**: Comma-separated list of integers (e.g., `1,3,5,8`).
+- **Effect**: All other profiles are ignored during processing.
 ---
 ##### `Methods Order`
-**Description**: This parameter allows to define the order in which point feature detection algorithms (such as dune base and peak) are applied. For each profile, the system attempts to apply the methods in the specified order and selects the first correct result. This allows you to test different detection approaches and prioritise methods that work better for a given dataset..
-**Input**: Comma-separated indices (e.g., `0,2,1`).
-**Details**: Each number refers to a specific method:
+- **Description**: This parameter allows to define the order in which point feature detection algorithms (such as dune base and peak) are applied. For each profile, the system attempts to apply the methods in the specified order and selects the first correct result. This allows you to test different detection approaches and prioritise methods that work better for a given dataset..
+- **Input**: Comma-separated indices (e.g., `0,2,1`).
+- **Details**: Each number refers to a specific method:
   - `0`: Zero Crossing - The first intersection of the profile with the reference level
   - `1`: Max Curvature - Point of maximum curvature change on the profile
   - `2`: Elevation Threshold - The point at which a specified altitude value is exceeded.
-**Purpose:**: 
+- **Purpose:**: 
   - Flexibility - allows you to adapt the analysis to data of different quality; 
   - Safety of calculations - if one method fails, another can produce a result.
-**Use case**: If the first method fails, the next one in the order is tried.
+- **Use case**: If the first method fails, the next one in the order is tried.
 ---
 ##### `Max Error`
-**Description**: Defines the maximum allowed error (in meters) during geometric fitting of shoreline features. It is the tolerance threshold to accept or reject a particular section of the profile as a representative section of the dune/beach
-**Details**: For each method used to determine a characteristic point (e.g., peak or base detection), the model fitting error (e.g., linear regression or other simplified model to points) is calculated. If this error is less than Max Error, the result is accepted and saved to the results. If it is greater, the method is considered ineffective for the given profile.
-**Input**: Decimal number (e.g., `3.0`).
-**Effect**: Higher values make the model more tolerant to irregular shapes but can reduce precision. A lower max_error value (e.g., 1.0) means greater accuracy, but fewer accepted results.
+- **Description**: Defines the maximum allowed error (in meters) during geometric fitting of shoreline features. It is the tolerance threshold to accept or reject a particular section of the profile as a representative section of the dune/beach
+- **Details**: For each method used to determine a characteristic point (e.g., peak or base detection), the model fitting error (e.g., linear regression or other simplified model to points) is calculated. If this error is less than Max Error, the result is accepted and saved to the results. If it is greater, the method is considered ineffective for the given profile.
+- **Input**: Decimal number (e.g., `3.0`).
+- **Effect**: Higher values make the model more tolerant to irregular shapes but can reduce precision. A lower max_error value (e.g., 1.0) means greater accuracy, but fewer accepted results.
 
 
 <p align="center">
@@ -365,13 +365,13 @@ The generated lines are saved in `GeoJSON` format inside the `data/output/lines`
 
 The GUI for the `LINES` module includes the following features:
 
-**Path Selector**: You can define the path to the main folder containing the profile point data using a dropdown or path field. This is usually a folder containing previous analyses, but NOT individual subfolders with dates, only the parent folder, e.g., `../../demo`.
-**Layer Selection**: A checkbox interface allows you to select which layers to process. Available options include:
+- **Path Selector**: You can define the path to the main folder containing the profile point data using a dropdown or path field. This is usually a folder containing previous analyses, but NOT individual subfolders with dates, only the parent folder, e.g., `../../demo`.
+- **Layer Selection**: A checkbox interface allows you to select which layers to process. Available options include:
   - `bottomPoints` – representing the bottom of dune or cliff
   - `firstZeroPoints` – the first crossing of elevation zero from the shoreline side
   - `lastZeroPoints` – the last zero crossing of elevation zero from the shoreline side, 
   - `topPoints` – the top of the dune or cliff 
-**Line Creation**: After selecting the desired point categories, clicking the `Create line` button will run the line-generation process. Each selected point category will be converted into a smoothed and ordered line.
+- **Line Creation**: After selecting the desired point categories, clicking the `Create line` button will run the line-generation process. Each selected point category will be converted into a smoothed and ordered line.
 
 <p align="center">
   <img src="https://c5studio.pl/cmorph/lines.png" alt="lines" width="auto">
@@ -527,8 +527,10 @@ The resulting figure includes:
 - Profile lines from both selected files, clearly color-coded.
 - Filled areas or arrows indicating differences in elevation or position (blue line is a last time period).
 - Automatically generated labels on last line, showing exact height of points and position on transect line (X Axis).
-- Annotation in legend box to each lines with name of data folder and position on transect line (zero,bottom,top). 
-**Use case**: The value of each point can be used to quickly calculate changes directly from the graph. All we need to know is the “Profile Resolution” parameter set in the Generator (when set to 1, it means 1 m; if the value was set to 0.1, it means that one point has a value of 0.1 m on the graph). 
+- Annotation in legend box to each lines with name of data folder and position on transect line (zero,bottom,top). \n
+
+- **Use case** 
+The value of each point can be used to quickly calculate changes directly from the graph. All we need to know is the “Profile Resolution” parameter set in the Generator (when set to 1, it means 1 m; if the value was set to 0.1, it means that one point has a value of 0.1 m on the graph). 
 So, to calculate the width of the beach for 2024-05 in the image below, simply perform the following operation: 212-195=17 m (because the point value in the generator was set to 1 m).
 Similarly, you can calculate the differences between the positions of points in individual years, e.g., the position of the coastline shifted between 2021-02 and 2024-05 by 12 m (195-183=12).    
 
@@ -561,12 +563,12 @@ The `differences` notebook is designed to perform comparative analyses between d
 3. Visualizes these differences in various formats:
    - **Change maps** with color-coded profiles and base DEM in bacground to see position of changes
    <p align="center">
-      <img src="https://c5studio.pl/cmorph/diff-map.jpg" alt="diff-map" width="auto">
+      <img src="https://c5studio.pl/cmorph/diff_map.jpg" alt="diff-map" width="auto">
     </p>
 
    - **Line plots** showing profile-wise differences 
    <p align="center">
-      <img src="https://c5studio.pl/cmorph/diff-plot.jpg" alt="diff-plot" width="auto">
+      <img src="https://c5studio.pl/cmorph/diff_plot.jpg" alt="diff-plot" width="auto">
     </p>
 
    - **Heatmaps** for overview of magnitude and direction of changes 
@@ -593,7 +595,8 @@ The `differences` notebook is designed to perform comparative analyses between d
 These results are used for qualitative interpretation and can be included directly in reports or presentations.
 
 ---
-**Note**: For best results, make sure both CSV files contain the same number and order of profiles, and that all required fields are present. All visualizations are generated with consistent formatting and color schemes to ensure easy comparability across different morphological variables and time intervals.
+- **Note**
+For best results, make sure both CSV files contain the same number and order of profiles, and that all required fields are present. All visualizations are generated with consistent formatting and color schemes to ensure easy comparability across different morphological variables and time intervals.
 ---
 
 This notebook is ideal for monitoring coastal dynamics and identifying zones of erosion or accretion over time. It supports visual validation of changes detected algorithmically in previous modules (e.g., analyzer).
@@ -626,7 +629,7 @@ The `dem_compared` notebook is designed to visually compare the spatial position
 - PNG image per profile with overlaid morphological points.
 
     <p align="center">
-      <img src="https://c5studio.pl/cmorph/dem-compare.jpg" alt="dem-compare" width="auto">
+      <img src="https://c5studio.pl/cmorph/dem-compare.png" alt="dem-compare" width="auto">
     </p>
 
 
@@ -733,3 +736,18 @@ Most common problems are:
 
 We recommend that the first analyses be performed on a smaller number of transects (e.g., 10-20) to check the accuracy of calculations on the new data. With correct results, more complex analyses can be run. 
 On the Demo files, calculations were performed for about 1000 transects on each file.   
+
+
+## Project Status
+This application is under active development. 
+Upcoming features may include: 
+- Additional data visualisations and modules.
+
+## Authors
+Jakub Śledziowski, Witold Maćków, Andrzej Łysko, Paweł Terefenko, Andrzej Giza and Kamran Tanwari as a team in Baltic Coastal Monitoring Team
+
+## Citation
+> Coming soon.
+
+## License
+MIT License
