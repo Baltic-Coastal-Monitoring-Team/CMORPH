@@ -14,6 +14,43 @@ The basic set of tools available from the GUI includes five modules:
 - Stats
 The repository also includes an additional tool in Jupyter notebook that allows visualisation and automatic comparison of output data.
 
+## ```Requirements and initialisation```
+
+Most of the tests (for both tools and auxiliary scripts) were performed on Linux Ubuntu 22.04.1 LTS using WSL2 running on Windows 11 Pro. The operation of the tools themselves was also tested on macOS Big Sur 11.7.1 and Windows 11 Pro. The Python interpreter version 3.10 was used each time, and the versions of the individual packages can be found in the requirements file.
+
+The systems required the GDAL and Rtree tools to be installed. For Linux Ubuntu, this can be done as follows:
+```
+sudo apt install gdal-bin libgdal-dev python3-rtree
+```
+
+It is recommended that you use the Python Virtual Environment. This protects against version conflicts of previously installed packages. The easiest way to create and activate a virtual environment for testing is to call the following commands (Linux system) in the project root directory:
+
+```
+python3 -m venv cmorph
+source cmorph/bin/activate
+```
+
+Install the necessary packages using the information in the requirements.txt file. Note that we must remember to enter the correct version of the previously installed GDAL tool in this file. So first check the version:
+
+```
+gdalinfo --version
+```
+
+then edit the requirements.txt file, modifying the GDAL version stored there to the version obtained in the previous step (e.g. GDAL==3.4.1). Finally, install the required packages:
+
+```
+pip install -r requirements.txt
+```
+
+To run app with GUI - Streamlit library is mandatory. After installation use code below:
+
+```
+streamlit run app.py
+```
+
+Where app.py is a file available in main folder.
+
+
 ## __Basic Tools__
 
 ## ```GENERATOR```
@@ -662,40 +699,6 @@ The script takes the generated CSV file from analyzer-py for comparison, the use
 
 
 ---
-
-## ```Requirements and initialisation```
-
-Most of the tests (for both tools and auxiliary scripts) were performed on Linux Ubuntu 22.04.1 LTS using WSL2 running on Windows 11 Pro. The operation of the tools themselves was also tested on macOS Big Sur 11.7.1 and Windows 11 Pro. The Python interpreter version 3.10 was used each time, and the versions of the individual packages can be found in the requirements file.
-
-The systems required the GDAL and Rtree tools to be installed. For Linux Ubuntu, this can be done as follows:
-```
-sudo apt install gdal-bin libgdal-dev python3-rtree
-```
-
-It is recommended that you use the Python Virtual Environment. This protects against version conflicts of previously installed packages. The easiest way to create and activate a virtual environment for testing is to call the following commands (Linux system) in the project root directory:
-
-```
-python3 -m venv cmorph
-source cmorph/bin/activate
-```
-
-Install the necessary packages using the information in the requirements.txt file. Note that we must remember to enter the correct version of the previously installed GDAL tool in this file. So first check the version:
-
-```
-gdalinfo --version
-```
-
-then edit the requirements.txt file, modifying the GDAL version stored there to the version obtained in the previous step (e.g. GDAL==3.4.1). Finally, install the required packages:
-
-```
-pip install -r requirements.txt
-```
-
-To run app with GUI use code below:
-
-```
-streamlit run app.py
-```
 
 ## ```Demo data```
 Once the environment has been initialised, we can start testing the tools. Five sets of test data (same area, different periods) have been prepared to download on ZENODO repository (https://zenodo.org/records/15476933). 
