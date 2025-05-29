@@ -744,9 +744,9 @@ There are two modes of operation:
 
 
 
-    <p align="center">
-      <img src="https://c5studio.pl/cmorph/data-visualizer.png" alt="data-visualizer" width="auto">
-    </p>
+<p align="center">
+<img src="https://c5studio.pl/cmorph/data-visualizer.png" alt="data-visualizer" width="auto">
+</p>
 
 
 ---
