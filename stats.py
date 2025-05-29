@@ -275,7 +275,7 @@ def compute_nsm(folder_points, selected_folders, base_folder):
         else "No data"
     )
 
-    with st.expander("Net Shoreline Movement (NSM) Statystyki"):
+    with st.expander("Net Shoreline Movement (NSM)"):
         st.write(f"Total number of transects: {total_transects_nsm}")
         st.write(f"Average distance: {avg_nsm:.2f} m")
         st.write(f"Maximum distance: {max_nsm:.2f} m (Transect ID: {max_nsm_transect_id})")
@@ -351,7 +351,7 @@ def compute_lrr(folder_points, selected_folders, base_folder):
     max_accretion_id = accretional_df.loc[accretional_df["LRR_rate"] == max_accretion, "profile_id"].values[0] if not accretional_df.empty else "No data"
     avg_accretion_rate = accretional_df["LRR_rate"].mean() if not accretional_df.empty else "No data"
 
-    with st.expander("Linear Regression Rate (LRR) Statystyki"):
+    with st.expander("Linear Regression Rate (LRR)"):
         st.write(f"Total number of transects: {total_transects}")
         st.write(f"Average rate: {avg_lrr:.3f} m/yr")
         st.write(f"Average R²: {avg_r2:.3f}")
@@ -494,7 +494,7 @@ def compute_epr(folder_points, selected_folders, base_folder):
     max_epr_transect_id = epr_df[epr_df["EPR_rate"] == max_epr]["profile_id"].values[0]
     min_epr_transect_id = epr_df[epr_df["EPR_rate"] == min_epr]["profile_id"].values[0]
 
-    with st.expander("End Point Rate (EPR) Statystyki"):
+    with st.expander("End Point Rate (EPR)"):
         st.write(f"Total number of transects: {total_transects}")
         
         if isinstance(avg_epr, str):
