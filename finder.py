@@ -98,7 +98,7 @@ def finder_ui():
             st.success("Configuration saved!")
 
         if st.button("Run Finder"):
-            st.info("Running Findera...")
+            st.info("Running Finder...")
             run_finder()
 
     elif subpage == "Results":
