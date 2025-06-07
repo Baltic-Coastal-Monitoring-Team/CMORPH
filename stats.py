@@ -183,6 +183,8 @@ def compute_statistics(base_folder, selected_folders, line_name):
 
     st.session_state["show_results"] = True  
     st.success("Calculations completed!")
+    export_stats_to_csv(base_folder, line_name, selected_folders)
+
 
 def compute_sce(folder_points, selected_folders):        
     data = []
@@ -542,6 +544,107 @@ def generate_epr_image(epr_df, input_folder, selected_folders):
     except Exception as e:
         st.error(f"Image file saving error: {e}")
         return None  
+
+
+def export_stats_to_csv(base_folder, line_name, selected_folders):
+
+    output_dir = os.path.join(base_folder, "stats", "csv")
+    os.makedirs(output_dir, exist_ok=True)
+
+    base_name = line_name.replace(".geojson", "").replace("Line", "").lower()
+    suffix = "_".join(selected_folders)
+
+    combined_df = []
+
+    def export_and_append(df, method_name):
+        df = df.copy()
+        df["method"] = method_name
+        df["line"] = base_name
+        df["from"] = selected_folders[0]
+        df["to"] = selected_folders[-1]
+        df.to_csv(os.path.join(output_dir, f"{method_name.lower()}_{base_name}_{suffix}.csv"), index=False)
+        combined_df.append(df)
+
+    for method_key, method_name in [
+        ("sce_df", "SCE"),
+        ("nsm_df", "NSM"),
+        ("lrr_df", "LRR"),
+        ("epr_df", "EPR")
+    ]:
+        if method_key in st.session_state:
+            export_and_append(st.session_state[method_key], method_name)
+
+    # Merged horizontaly (wide)
+    try:
+        df_sce = st.session_state["sce_df"][["profile_id", "max_distance", "min_distance"]] if "sce_df" in st.session_state else None
+        df_nsm = st.session_state["nsm_df"][["profile_id", "nsm_distance"]] if "nsm_df" in st.session_state else None
+        df_lrr = st.session_state["lrr_df"][["profile_id", "LRR_rate", "n"]].rename(columns={"LRR_rate": "lrr_rate"}) if "lrr_df" in st.session_state else None
+        df_epr = st.session_state["epr_df"][["profile_id", "EPR_rate"]].rename(columns={"EPR_rate": "epr_rate"}) if "epr_df" in st.session_state else None
+
+        df_merged = None
+        for df in [df_sce, df_nsm, df_lrr, df_epr]:
+            if df is not None:
+                df_merged = df if df_merged is None else df_merged.merge(df, on="profile_id", how="outer")
+
+        if df_merged is not None:
+            df_merged["line"] = base_name
+            df_merged["from"] = selected_folders[0]
+            df_merged["to"] = selected_folders[-1]
+            merged_path = os.path.join(output_dir, f"merged_stats_{base_name}_{suffix}.csv")
+            df_merged.to_csv(merged_path, index=False)
+            st.success("Statistics merged horizontally and saved.")
+        else:
+            st.warning("No data available to merge horizontally.")
+    except Exception as e:
+        st.error(f"Failed to merge statistics (wide): {e}")
+
+    # Merged verticaly (tidy format)
+    try:
+        tidy_df_list = []
+
+        if "lrr_df" in st.session_state:
+            df = st.session_state["lrr_df"][["profile_id", "LRR_rate"]].copy()
+            df["method"] = "LRR"
+            df = df.rename(columns={"LRR_rate": "value"})
+            df["metric"] = "lrr_rate"
+            tidy_df_list.append(df)
+
+        if "epr_df" in st.session_state:
+            df = st.session_state["epr_df"][["profile_id", "EPR_rate"]].copy()
+            df["method"] = "EPR"
+            df = df.rename(columns={"EPR_rate": "value"})
+            df["metric"] = "epr_rate"
+            tidy_df_list.append(df)
+
+        if "sce_df" in st.session_state:
+            df = st.session_state["sce_df"][["profile_id", "max_distance", "min_distance"]].copy()
+            for col in ["max_distance", "min_distance"]:
+                temp = df[["profile_id"]].copy()
+                temp["value"] = df[col]
+                temp["metric"] = col
+                temp["method"] = "SCE"
+                tidy_df_list.append(temp)
+
+        if "nsm_df" in st.session_state:
+            df = st.session_state["nsm_df"][["profile_id", "nsm_distance"]].copy()
+            df["value"] = df["nsm_distance"]
+            df["metric"] = "nsm_distance"
+            df["method"] = "NSM"
+            tidy_df_list.append(df[["profile_id", "value", "metric", "method"]])
+
+        if tidy_df_list:
+            tidy_df = pd.concat(tidy_df_list, ignore_index=True)
+            tidy_df["line"] = base_name
+            tidy_df["from"] = selected_folders[0]
+            tidy_df["to"] = selected_folders[-1]
+            tidy_path = os.path.join(output_dir, f"tidy_stats_{base_name}_{suffix}.csv")
+            tidy_df.to_csv(tidy_path, index=False)
+            st.success("Tidy (ML-friendly) version of statistics saved.")
+        else:
+            st.warning("No data available to export in tidy format.")
+    except Exception as e:
+        st.error(f"Failed to create tidy version: {e}")
+
 
 
 
