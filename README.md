@@ -103,9 +103,14 @@ The default configuration of the program can be changed by editing the ```genera
 - **Description**: Sampling resolution along each transect.
 - **Input**: Positive number (e.g., `1`).
 - **Effect**: Defines the distance between interpolated elevation points along the transect. The best results is to set value based on DEM resolution (e.g. if DEM is 0,1 m/pix correct value is 0,1). For test or speed up process and calculate with less details default value (1) is ok.    
-
+---
+##### `Buffer Width (m)`
+- **Description**: Defines the buffer area width around each transect, used to crop and extract a portion of the DEM and coastline relevant to each profile..
+- **Input**: Positive number (e.g., `10`).
+- **Effect**: Determines how wide the zone around each transect will be when clipping data. This value is the distance from the transect axis in one direction, so the total width of the buffer will be twice its size. A larger buffer captures more context from the DEM and coastline, which may improve profile generation in sloped or curved terrains but increases computation. Default value is 10 meters. Using a buffer and parallel generated transect lines, full coverage of the analyzed area can be performed and the volume of the entire beach and dune/cliff can be calculated accurately.  
+    
 <p align="center">
-  <img src="https://c5studio.pl/cmorph/generator-config.png" alt="generator-config" width="auto">
+  <img src="https://c5studio.pl/cmorph/generator-config2.png" alt="generator config" width="auto">
 </p>
 
 
