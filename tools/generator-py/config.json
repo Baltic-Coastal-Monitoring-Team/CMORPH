@@ -31,7 +31,7 @@
     },
     "parameters": {
         "use_precalculated_transects": false,
-        "buffwer_width": 10,
+        "buffer_width": 10,
         "transect_distance": 50,
         "transect_length": 300,
         "profile_resolution": 1

@@ -139,6 +139,9 @@ def generator_ui():
     config["parameters"]["profile_resolution"] = st.number_input(
         "Profile Resolution (m)", value=config["parameters"].get("profile_resolution", 0.5)
     )
+    config["parameters"]["buffer_width"] = st.number_input(
+        "Buffer Width (m)", value=config["parameters"].get("buffer_width", 10)
+    )
 
     if st.button("Save Configuration"):
         save_config(config)
