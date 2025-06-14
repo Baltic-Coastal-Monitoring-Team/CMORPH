@@ -1,6 +1,6 @@
 {
     "paths": {
-        "base": "../../demo/2024-05",
+        "base": "../../demo/2021-02",
         "input": {
             "coastline": "input/coast",
             "dem": "input/dem",
@@ -31,7 +31,7 @@
     },
     "parameters": {
         "use_precalculated_transects": false,
-        "buffwer_width": 10,
+        "buffer_width": 10,
         "transect_distance": 50,
         "transect_length": 300,
         "profile_resolution": 1
