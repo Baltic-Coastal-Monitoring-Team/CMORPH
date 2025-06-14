@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Śledziowski"
+  given-names: "Jakub"
+  orcid: "https://orcid.org/0000-0001-9359-7907"
+- family-names: "Terefenko"
+  given-names: "Pawel"
+  orcid: "https://orcid.org/0000-0002-5081-8615"
+- family-names: "Maćków"
+  given-names: "Witold"
+  orcid: "https://orcid.org/0000-0003-1905-8854"
+- family-names: "Łysko"
+  given-names: "Andrzej"
+  orcid: "https://orcid.org/0000-0001-8900-0100"  
+- family-names: "Giza"
+  given-names: "Andrzej"
+  orcid: "https://orcid.org/0000-0002-5459-9261"    
+- family-names: "Tanwari"
+  given-names: "Kamran"
+  orcid: "https://orcid.org/0000-0002-4811-2613"    
+title: "CMORPH – An Open-Source Application for Coastal Morphology Detection and Analysis"
+version: 3.0.1
+doi: 10.5281/zenodo.15663813
+date-released: 2025-06-15
+url: "https://github.com/Baltic-Coastal-Monitoring-Team/CMORPH"
