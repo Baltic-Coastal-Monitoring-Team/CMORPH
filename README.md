@@ -812,7 +812,7 @@ Upcoming features may include:
 Jakub Śledziowski, Witold Maćków, Andrzej Łysko, Paweł Terefenko, Andrzej Giza and Kamran Tanwari as a team in Baltic Coastal Monitoring Team
 
 ## Citation
-> Coming soon.
+[![DOI](https://zenodo.org/badge/986581046.svg)](https://doi.org/10.5281/zenodo.15663812)
 
 ## License
 MIT License
