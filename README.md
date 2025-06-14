@@ -460,7 +460,7 @@ No separate `config.json` is required. All settings and file selection are done 
 ---
 
 <p align="center">
-  <img src="https://c5studio.pl/cmorph/stats.png" alt="stats" width="auto">
+  <img src="https://c5studio.pl/cmorph/statistics.png" alt="statistics" width="auto">
 </p>
 
 
@@ -499,10 +499,7 @@ Additionally, PNG files are created for NSM, EPR, and LRR, which are saved in th
 - **Definition**: Distance between most landward and most seaward shoreline.
 - **Use case**: Represents total shoreline variability.
 
-<p align="center">
-  <img src="https://c5studio.pl/cmorph/stats3.png" alt="stats3" width="auto">
-</p>
-
+--- 
 
 ## __Notebook Scripts__
 
