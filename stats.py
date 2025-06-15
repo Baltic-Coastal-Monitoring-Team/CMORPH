@@ -144,11 +144,44 @@ def stats_ui():
                 else:
                     compute_statistics(base_path, st.session_state["selected_folders"], st.session_state["line_name"])
 
+def load_origins(base_folder, selected_folders, line_name):
+    origins = {}
+
+    for folder in selected_folders:
+        folder_date = re.search(r'\d{4}-\d{2}-\d{2}', line_name)
+        if folder_date:
+            date_str = folder_date.group()
+        else:
+            date_str = "unknown_date"
+
+        cropped_path = os.path.join(base_folder, folder, "output", "generator", "profiles", "cropped")
+        if not os.path.exists(cropped_path):
+            continue
+
+        for filename in os.listdir(cropped_path):
+            if filename.endswith(".csv"):
+                match = re.match(r"(\d+)_crop_", filename)
+                if match:
+                    profile_id = int(match.group(1))
+                    csv_path = os.path.join(cropped_path, filename)
+                    try:
+                        df = pd.read_csv(csv_path)
+                        origin_row = df[df["no_point"] == 0].iloc[0]
+                        x = origin_row["x_geo"]
+                        y = origin_row["y_geo"]
+                        origins.setdefault(profile_id, {})[folder] = (x, y)
+                    except Exception as e:
+                        st.warning(f"Error reading origin for {filename}: {e}")
+
+    return origins
 
 def compute_statistics(base_folder, selected_folders, line_name):
     st.subheader(f"{line_name}")
     
     folder_points = {}
+
+    origins = load_origins(base_folder, selected_folders, line_name)
+    st.session_state["origins"] = origins
 
     if len(selected_folders) < 2:
         st.error("To calculate statistics, select at least 2 folders.")
@@ -220,6 +253,7 @@ def compute_sce(folder_points, selected_folders):
         st.write(st.session_state["sce_df"])
 
 def compute_nsm(folder_points, selected_folders, base_folder):
+    origins = st.session_state.get("origins", {})
     if len(selected_folders) < 2:
         st.error("NSM requires at least two folders for comparison.")
         return
@@ -240,18 +274,23 @@ def compute_nsm(folder_points, selected_folders, base_folder):
         return
 
     nsm_data = []
-    for profile_id in common_profiles:
-        first_point = first_gdf[first_gdf["profile_id"] == profile_id].geometry
-        last_point = last_gdf[last_gdf["profile_id"] == profile_id].geometry
+    for profile_id in folder_points[first_folder]["profile_id"].unique():
+        first_gdf = folder_points[first_folder]
+        last_gdf = folder_points[last_folder]
 
-        if len(first_point) == 0 or len(last_point) == 0:
-            st.warning(f"No points for the transect {profile_id}")
+        first_point = first_gdf[first_gdf["profile_id"] == profile_id].geometry.iloc[0]
+        last_point = last_gdf[last_gdf["profile_id"] == profile_id].geometry.iloc[0]
+
+        origin_xy = origins.get(profile_id, {}).get(first_folder, None)
+        if origin_xy is None:
             continue
 
-        nsm_distance = first_point.iloc[0].distance(last_point.iloc[0])
+        ox, oy = origin_xy
+        dist_first = np.sqrt((first_point.x - ox) ** 2 + (first_point.y - oy) ** 2)
+        dist_last = np.sqrt((last_point.x - ox) ** 2 + (last_point.y - oy) ** 2)
+        nsm_distance = dist_last - dist_first
 
-        direction = 1 if last_point.iloc[0].y > first_point.iloc[0].y else -1
-        nsm_data.append([profile_id, direction * nsm_distance])
+        nsm_data.append([profile_id, nsm_distance])
 
     if not nsm_data:
         st.warning("No data available to calculate NSM.")
@@ -440,6 +479,7 @@ def generate_nsm_image(nsm_df, input_folder, selected_folders):
         return None  
 
 def compute_epr(folder_points, selected_folders, base_folder):
+    origins = st.session_state.get("origins", {})
     if len(selected_folders) < 2:
         st.error("EPR requires at least two folders to compare.")
         return
@@ -470,22 +510,32 @@ def compute_epr(folder_points, selected_folders, base_folder):
         return
 
     epr_data = []
-    for profile_id in first_gdf["profile_id"].unique():
-        first_point = first_gdf[first_gdf["profile_id"] == profile_id].geometry
-        last_point = last_gdf[last_gdf["profile_id"] == profile_id].geometry
+    for profile_id in sorted(folder_points[first_folder]["profile_id"].unique()):
+        first_point = first_gdf[first_gdf["profile_id"] == profile_id].geometry.iloc[0]
+        last_point = last_gdf[last_gdf["profile_id"] == profile_id].geometry.iloc[0]
 
-        if len(first_point) == 0 or len(last_point) == 0:
+        origin_xy = origins.get(profile_id, {}).get(first_folder, None)
+        if origin_xy is None:
             continue
 
-        epr_value = first_point.iloc[0].distance(last_point.iloc[0]) / num_years
-        direction = 1 if last_point.iloc[0].y > first_point.iloc[0].y else -1
-        epr_data.append([profile_id, direction * epr_value])
+        ox, oy = origin_xy
+
+        vec_first = np.array([first_point.x - ox, first_point.y - oy])
+        vec_last = np.array([last_point.x - ox, last_point.y - oy])
+
+        dist_first = np.linalg.norm(vec_first)
+        dist_last = np.linalg.norm(vec_last)
+
+        delta = dist_first - dist_last
+
+        epr_value = delta / num_years
+        epr_data.append([profile_id, epr_value])
 
     if not epr_data:
         st.warning("No data available to calculate EPR.")
         return
 
-    epr_df = pd.DataFrame(epr_data, columns=["profile_id", "EPR_rate"])
+    epr_df = pd.DataFrame(epr_data, columns=["profile_id", "EPR_rate"]).sort_values(by="profile_id").reset_index(drop=True)
     st.session_state["epr_df"] = epr_df  
 
     total_transects = len(epr_df)
@@ -520,6 +570,7 @@ def compute_epr(folder_points, selected_folders, base_folder):
         st.image(img_path, caption="", use_container_width=True)
 
 def generate_epr_image(epr_df, input_folder, selected_folders):
+    epr_df = epr_df.sort_values(by="profile_id").reset_index(drop=True)
     fig, ax = plt.subplots(figsize=(10, 2))
 
     for idx, row in epr_df.iterrows():
