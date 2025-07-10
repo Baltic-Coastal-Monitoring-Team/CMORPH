@@ -16,7 +16,21 @@ The repository also includes an additional tool in Jupyter notebook that allows 
 
 ## ```Requirements and initialisation```
 
-Most of the tests (for both tools and auxiliary scripts) were performed on Linux Ubuntu 22.04.1 LTS using WSL2 running on Windows 11 Pro. The operation of the tools themselves was also tested on macOS Big Sur 11.7.1 and Windows 11 Pro. The Python interpreter version 3.10 was used each time, and the versions of the individual packages can be found in the requirements file.
+CMORPH has been tested on:
+- **Linux Ubuntu 22.04.2 LTS**,
+- **macOS Big Sur 11.7+**,
+- **macOS Ventura 13.14+**,
+- **macOS Sonoma 14.7+**,
+- and **Windows 11 Pro** (via WSL2).
+
+The software is compatible with **Python 3.10**, which ensures stable support for required geospatial libraries such as `gdal`, `rasterio`, `fiona`, `geopandas`, and others.
+
+> ⚠️ Python 3.11 and higher are **not yet fully supported** due to upstream compatibility issues with some geospatial packages.
+ 
+---
+
+### Installation using virtual environment (pip)
+
 
 The systems required the GDAL and Rtree tools to be installed. For Linux Ubuntu, this can be done as follows:
 ```
@@ -25,30 +39,125 @@ sudo apt install gdal-bin libgdal-dev python3-rtree
 
 It is recommended that you use the Python Virtual Environment. This protects against version conflicts of previously installed packages. The easiest way to create and activate a virtual environment for testing is to call the following commands (Linux system) in the project root directory:
 
-```
-python3 -m venv cmorph
-source cmorph/bin/activate
-```
-
-Install the necessary packages using the information in the requirements.txt file. Note that we must remember to enter the correct version of the previously installed GDAL tool in this file. So first check the version:
-
-```
-gdalinfo --version
+```bash
+python3 -m venv cmorph-env
+source cmorph-env/bin/activate
 ```
 
-then edit the requirements.txt file, modifying the GDAL version stored there to the version obtained in the previous step (e.g. GDAL==3.4.1). Finally, install the required packages:
+Install required packages:
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
-To run app with GUI - Streamlit library is mandatory. After installation use code below:
+**Important:**  
+Make sure the `GDAL` version listed in `requirements.txt` matches your system's installed GDAL version. You can check it with:
 
+```bash
+gdalinfo --version
 ```
+
+If necessary, update the line `GDAL==x.x.x` in `requirements.txt` before running the installation.
+
+
+### Alternative setup with Conda
+
+We also provide an `cmorph_env.yml` file for users of Anaconda or Miniconda:
+
+```bash
+conda env create -f cmorph_env.yml
+conda activate cmorph
+```
+
+This approach simplifies installation of system libraries like GDAL and installs all necessary packages.
+
+---
+
+
+## ```Input data```
+
+To perform a complete analysis with CMORPH, the user needs to prepare the following input files:
+
+- **DEM file** (GeoTIFF): Must be in a known projected coordinate system (e.g., EPSG:2180 or EPSG:32633). The best detection results are achieved using high-resolution elevation models with resolutions up to 1 m. Demo files have a resolution of 10 cm, so you can also set the resolution to 0.1 instead of the default value of 1 (meaning 1 m) in the configuration file. Note: finer resolution significantly increases processing time.
+
+- **Mask (SHP)**: A polygon file defining the area of interest. It should include both the shoreline and the inland zone up to the top of the dune or cliff. Only profiles intersecting this mask will be processed.
+
+- **Baseline line (SHP)**: A line used to generate perpendicular transects. This can represent either a general coastline or a custom-drawn baseline. Profile spacing and length are defined in the `config.json` file.
+
+> ⚠️ If the baseline line is highly sinuous or complex (e.g., manually traced waterline), transects may intersect or shift over time. Although CMORPH handles intersecting transects without issue, such geometry may reduce comparability between time periods. For consistent results, we recommend using a stable and smooth baseline aligned with the general shoreline orientation.
+
+> For temporal comparisons, use the same mask and baseline line for all time periods. The line does not need to perfectly reflect the real shoreline — a generalized, perpendicular line often yields better comparative accuracy.
+
+---
+
+
+## ```Demo data```
+
+Demo datasets are hosted externally due to GitHub file size limits. To automatically download and place them into the correct folders, use:
+
+```bash
+python download_demo_data.py
+```
+
+This will fetch data from the official Zenodo repository:
+[https://doi.org/10.5281/zenodo.15476932](https://doi.org/10.5281/zenodo.15476932)
+
+Downloaded files will be placed into the `demo/` directory under subfolders such as `2021-02`, `2022-02`, etc.
+
+
+Five sets of test data (same area, different periods) have been prepared to download from ZENODO repository.
+All test data should be placed in the ```demo``` directory, respectively in subdirectories ```2021-02```, ```2022-02``` etc. 
+Each directory contains the input data for calculations. On GitHub repository are corresponding configuration JSON files in each folders which can be instruction how to set up them. 
+
+The calculation can take, depending on the computer used and configuration settings, quite a long time. We are kept informed of the stage of the calculations that are currently being performed. The sample data contain the input DEM, masks and coastline for each raster specifically. After running the script, the output of each sample file will be saved in the respective sample directory in the output folder which will be automatically generated.
+
+Once all the data have been correctly recalculated, we can use the GUI for visualisation or Jupyter Notebook tools in for further analysis. 
+
+
+
+---
+
+## Post-installation validation
+
+After installing dependencies, run the **post-install check** to verify the environment and demo data structure:
+
+```bash
+python post_install_check.py
+```
+
+This will:
+- Confirm that all required Python packages are installed,
+- Check that the demo data folder structure is correctly set up.
+
+---
+
+## Running the GUI
+
+After installation, launch the CMORPH GUI using:
+
+```bash
 streamlit run app.py
 ```
 
-Where app.py is a file available in main folder.
+The file `app.py` is located in the main directory.
+
+---
+
+## Using CMORPH via CLI
+
+All main processing steps (Generator, Finder, Analyzer) can also be executed directly from the terminal. Each module is self-contained and controlled via a JSON configuration file.
+
+To run a module:
+
+```bash
+python tools/generator-py/main.py
+python tools/finder-py/main.py
+python tools/analyzer-py/main.py
+```
+
+The configuration is defined in a `config.json` file located in each module's folder.
+
+This approach allows for fully reproducible and scriptable workflows without relying GUI, making it ideal for batch processing and integration into automated pipelines.
 
 
 ## __Basic Tools__
@@ -437,7 +546,7 @@ This module performs **statistical analysis of shoreline changes** based on prev
 - **EPR (End Point Rate)** – shoreline change rate based on the difference between the oldest and newest shoreline position.
 - **SCE (Shoreline Change Envelope)** – the total distance between the farthest and closest shoreline positions observed.
 - **NSM (Net Shoreline Movement)** – the distance between the oldest and most recent shoreline (signed, not absolute).
-- **EPR & LRR Visualization** – color-coded bar representations of erosion (red) and accretion (green) per transect.
+- **NSM & EPR & LRR Visualization** – color-coded bar representations of erosion (red) and accretion (green) per transect.
 
 All computations are based on GeoJSON files containing multiple shoreline positions and a predefined set of transects.
 No separate `config.json` is required. All settings and file selection are done through GUI using default paths. 
@@ -499,7 +608,7 @@ Additionally, PNG files are created for NSM, EPR, and LRR, which are saved in th
 - **Definition**: Distance between most landward and most seaward shoreline.
 - **Use case**: Represents total shoreline variability.
 
---- 
+
 
 ## __Notebook Scripts__
 
@@ -636,9 +745,27 @@ These results are used for qualitative interpretation and can be included direct
 ---
 - **Note**
 For best results, make sure both CSV files contain the same number and order of profiles, and that all required fields are present. All visualizations are generated with consistent formatting and color schemes to ensure easy comparability across different morphological variables and time intervals.
----
 
-This notebook is ideal for monitoring coastal dynamics and identifying zones of erosion or accretion over time. It supports visual validation of changes detected algorithmically in previous modules (e.g., analyzer).
+---
+⚠️ Tip: For consistent comparisons, use the same baseline (transects and mask) when preparing input CSV files from different periods and the same transect distance and buffor. 
+
+
+### Extended Interpretation and Visualization
+
+The Stats module produces color-coded outputs that visually represent shoreline change metrics for each cross-shore transect. These maps and charts allow users to quickly identify areas of erosion and accretion, as well as trends over time.
+
+#### Color Interpretation:
+
+- Red tones indicate positive changes (e.g., increase dune/cliff slope, beach width or dune/cliff volume).
+- Blue tones indicate negative changes (e.g., shoreline retreat, flatten dune slope, decrease volume).
+- Neutral or white tones suggest little or no change between the compared datasets.
+
+This notebook is ideal for monitoring coastal dynamics and identifying zones of erosion or accretion over time. It supports visual validation of changes detected in previous modules (e.g., analyzer).
+
+These graphical summaries are particularly useful for:
+- Detecting hotspots of change (e.g., severe dune retreat),
+- Evaluating the effectiveness of coastal protection over time,
+- Communicating complex geomorphological trends in an intuitive format.
 
 ---
 
@@ -750,7 +877,6 @@ There are two modes of operation:
 <img src="https://c5studio.pl/cmorph/data-visualizer.png" alt="data-visualizer" width="auto">
 </p>
 
-
 ---
 
 ## ```CSV_COMPARED```
@@ -776,15 +902,6 @@ The script takes the generated CSV file from analyzer-py for comparison, the use
 
 ---
 
-## ```Demo data```
-Once the environment has been initialised, we can start testing the tools. Five sets of test data (same area, different periods) have been prepared to download on ZENODO repository (https://zenodo.org/records/15476933). 
-All test data should be placed in the ```demo``` directory, respectively in subdirectories ```2021-02```, ```2022-02``` etc. 
-Each directory contains the input data for calculations. On GitHub repository are corresponding configuration files in each folders. 
-
-
-The calculation can take, depending on the computer used, quite a long time. We are kept informed of the stage of the calculations that are currently being performed. The sample data contain the input DEM, masks and coastline for each raster specifically. After running the script, the output of each sample file will be saved in the respective sample directory in the output folder which will be automatically generated.
-
-Once all the data have been correctly recalculated, we can use the GUI for visualisation or Jupyter Notebook tools in for further analysis. The paths in these programs are set by default to the data in the demo directory, but the scripts support both absolute and relative paths. .
 
 ## ```Most common problems```
 - no Rtree tool installed on the system,

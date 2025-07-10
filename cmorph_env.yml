@@ -1,0 +1,45 @@
+name: cmorph
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - gdal
+  - geopandas
+  - rasterio
+  - fiona
+  - pyproj
+  - shapely
+  - matplotlib
+  - pandas
+  - numpy
+  - scikit-learn
+  - scipy
+  - xarray
+  - h5py
+  - netcdf4
+  - rtree
+  - dask
+  - natsort
+  - opencv
+  - jupyterlab
+  - ipykernel
+  - tqdm
+  - pip
+  - pip:
+      - streamlit
+      - streamlit-folium
+      - folium
+      - seaborn
+      - earthpy
+      - altair
+      - richdem
+      - shap
+      - xgboost
+      - pydeck
+      - pygeopkg
+      - pyogrio
+      - copernicusmarine
+      - imageio
+      - log-symbols
+      - halo
